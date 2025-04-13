@@ -10,6 +10,11 @@ export async function translateSubtitles(
   targetLanguage: string
 ): Promise<SubtitleEntry[]> {
   try {
+    // Ensure subtitles array is not empty
+    if (!subtitles || subtitles.length === 0) {
+      throw new Error("No subtitles provided for translation");
+    }
+
     const subtitleTexts = subtitles.map(sub => sub.text);
     const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
     
@@ -74,7 +79,7 @@ ${subtitleTexts.join('\n\n')}`;
 
     return subtitles.map(subtitle => ({
       ...subtitle,
-      text: `${languageMap[targetLanguage]}${subtitle.text} (API Error)`
+      text: `${languageMap[targetLanguage] || ''}${subtitle.text} (API Error)`
     }));
   }
 }
