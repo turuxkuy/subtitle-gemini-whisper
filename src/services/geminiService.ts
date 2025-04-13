@@ -38,15 +38,18 @@ export async function translateSubtitles(
     const targetLangName = languages[targetLanguage] || targetLanguage;
 
     const subtitleTexts = subtitles.map(sub => sub.text);
-    const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+    const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
     
     // Create the prompt with source and target language
     const prompt = `Translate the following subtitles from ${sourceLangName} to ${targetLangName}. 
-Return only the translated text for each subtitle, maintaining the same format:
+Return only the translated text for each subtitle, maintaining the same format and number:
 
 ${subtitleTexts.join('\n\n')}`;
 
     console.log("Sending request to Gemini API with prompt:", prompt);
+    console.log("Source language:", sourceLangName);
+    console.log("Target language:", targetLangName);
+    console.log("Number of subtitles:", subtitles.length);
 
     // Make request to Gemini API
     const response = await fetch(`${apiUrl}?key=${GEMINI_API_KEY}`, {
@@ -57,30 +60,45 @@ ${subtitleTexts.join('\n\n')}`;
       body: JSON.stringify({
         contents: [{
           parts: [{ text: prompt }]
-        }]
+        }],
+        generationConfig: {
+          temperature: 0.2,
+          topP: 0.8,
+          topK: 40
+        }
       })
     });
 
     if (!response.ok) {
       const errorData = await response.text();
       console.error("Gemini API error:", errorData);
-      throw new Error(`Gemini API responded with status ${response.status}`);
+      throw new Error(`Gemini API responded with status ${response.status}: ${errorData}`);
     }
 
     const data = await response.json();
     console.log("Gemini API response:", data);
     
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0].text) {
+      console.error("Unexpected Gemini API response structure:", data);
+      throw new Error("Unexpected Gemini API response structure");
+    }
+    
     // Extract translated text from the response
     const translatedText = data.candidates[0].content.parts[0].text;
     
     // Split the translated text by double newlines to get individual subtitles
-    const translatedSubtitles = translatedText.split('\n\n');
+    const translatedSubtitles = translatedText.split(/\n\s*\n/);
+    
+    console.log("Translated subtitles count:", translatedSubtitles.length);
+    console.log("Original subtitles count:", subtitles.length);
     
     // Map the translated text back to subtitle objects
-    return subtitles.map((sub, index) => ({
+    const result = subtitles.map((sub, index) => ({
       ...sub,
-      text: translatedSubtitles[index] || sub.text // Fallback to original if translation is missing
+      text: index < translatedSubtitles.length ? translatedSubtitles[index].trim() : sub.text
     }));
+    
+    return result;
   } catch (error) {
     console.error("Translation error:", error);
     // If API call fails, return mock translated subtitles (as fallback)
@@ -104,7 +122,7 @@ ${subtitleTexts.join('\n\n')}`;
 
     return subtitles.map(subtitle => ({
       ...subtitle,
-      text: `${languageMap[targetLanguage] || ''}${subtitle.text} (API Error)`
+      text: `${languageMap[targetLanguage] || ''}${subtitle.text} (API Error: ${(error as Error).message})`
     }));
   }
 }

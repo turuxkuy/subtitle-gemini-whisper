@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import FileUploader from "@/components/FileUploader";
 import LanguageSelector from "@/components/LanguageSelector";
 import TranslationResult from "@/components/TranslationResult";
-import { Separator } from "@/components/ui/separator";
 import { SubtitleEntry } from "@/types/subtitle";
 import { parseSRT, createSRTContent } from "@/utils/srtParser";
 import { translateSubtitles } from "@/services/geminiService";
@@ -20,35 +19,49 @@ const Index = () => {
   const [isTranslating, setIsTranslating] = useState(false);
 
   const handleFileUpload = async (uploadedFile: File) => {
-    setFile(uploadedFile);
-    setTranslatedSubtitles([]);
-    
     try {
+      if (!uploadedFile) {
+        setFile(null);
+        setOriginalSubtitles([]);
+        setTranslatedSubtitles([]);
+        return;
+      }
+      
+      setFile(uploadedFile);
+      setTranslatedSubtitles([]);
+      
       const content = await uploadedFile.text();
       const subtitles = parseSRT(content);
-      setOriginalSubtitles(subtitles);
       
-      toast.success("SRT file successfully loaded");
+      if (subtitles.length === 0) {
+        toast.error("File SRT tidak valid atau kosong");
+        return;
+      }
+      
+      setOriginalSubtitles(subtitles);
+      toast.success(`Berhasil memuat ${subtitles.length} baris subtitle`);
+      
     } catch (error) {
-      toast.error("Failed to parse SRT file. Please check the file format.");
+      toast.error("Gagal mengurai file SRT. Silakan periksa format file.");
       console.error("SRT parsing error:", error);
     }
   };
 
   const handleTranslate = async () => {
     if (originalSubtitles.length === 0) {
-      toast.error("Please upload a valid SRT file first");
+      toast.error("Silakan unggah file SRT yang valid terlebih dahulu");
       return;
     }
 
     setIsTranslating(true);
 
     try {
+      console.log(`Menerjemahkan dari ${sourceLanguage} ke ${targetLanguage}...`);
       const translated = await translateSubtitles(originalSubtitles, sourceLanguage, targetLanguage);
       setTranslatedSubtitles(translated);
-      toast.success("Translation completed successfully");
+      toast.success(`Terjemahan berhasil: ${translated.length} baris subtitle`);
     } catch (error) {
-      toast.error("Translation failed. Please try again.");
+      toast.error(`Terjemahan gagal: ${(error as Error).message}`);
       console.error("Translation error:", error);
     } finally {
       setIsTranslating(false);
@@ -57,7 +70,7 @@ const Index = () => {
 
   const handleDownload = () => {
     if (translatedSubtitles.length === 0) {
-      toast.error("No translated subtitles to download");
+      toast.error("Tidak ada subtitle terjemahan untuk diunduh");
       return;
     }
 
@@ -72,6 +85,8 @@ const Index = () => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    
+    toast.success("File subtitle berhasil diunduh");
   };
 
   return (
