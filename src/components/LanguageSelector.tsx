@@ -15,7 +15,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
 
 interface LanguageSelectorProps {
   selectedSourceLanguage: string;
@@ -82,7 +81,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
+            <PopoverContent className="w-full p-0" align="start">
               <Command>
                 <CommandInput placeholder="Cari bahasa..." />
                 <CommandEmpty>Bahasa tidak ditemukan.</CommandEmpty>
@@ -91,8 +90,8 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
                     <CommandItem
                       key={language.value}
                       value={language.value}
-                      onSelect={(currentValue) => {
-                        onSourceLanguageChange(currentValue);
+                      onSelect={() => {
+                        onSourceLanguageChange(language.value);
                         setSourceOpen(false);
                       }}
                     >
@@ -127,7 +126,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
+            <PopoverContent className="w-full p-0" align="start">
               <Command>
                 <CommandInput placeholder="Cari bahasa..." />
                 <CommandEmpty>Bahasa tidak ditemukan.</CommandEmpty>
@@ -136,8 +135,8 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
                     <CommandItem
                       key={language.value}
                       value={language.value}
-                      onSelect={(currentValue) => {
-                        onTargetLanguageChange(currentValue);
+                      onSelect={() => {
+                        onTargetLanguageChange(language.value);
                         setTargetOpen(false);
                       }}
                     >
