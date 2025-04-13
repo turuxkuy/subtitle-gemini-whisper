@@ -15,14 +15,38 @@ export async function translateSubtitles(
       throw new Error("No subtitles provided for translation");
     }
 
+    // Get language labels for better prompting
+    const languages: Record<string, string> = {
+      "id": "Bahasa Indonesia",
+      "en": "English",
+      "ja": "Japanese",
+      "ko": "Korean",
+      "zh": "Chinese Simplified",
+      "zh-TW": "Chinese Traditional",
+      "fr": "French",
+      "de": "German",
+      "es": "Spanish",
+      "pt": "Portuguese",
+      "ru": "Russian",
+      "ar": "Arabic",
+      "hi": "Hindi",
+      "bn": "Bengali",
+      "it": "Italian",
+    };
+    
+    const sourceLangName = languages[sourceLanguage] || sourceLanguage;
+    const targetLangName = languages[targetLanguage] || targetLanguage;
+
     const subtitleTexts = subtitles.map(sub => sub.text);
     const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
     
     // Create the prompt with source and target language
-    const prompt = `Translate the following subtitles from ${sourceLanguage} to ${targetLanguage}. 
+    const prompt = `Translate the following subtitles from ${sourceLangName} to ${targetLangName}. 
 Return only the translated text for each subtitle, maintaining the same format:
 
 ${subtitleTexts.join('\n\n')}`;
+
+    console.log("Sending request to Gemini API with prompt:", prompt);
 
     // Make request to Gemini API
     const response = await fetch(`${apiUrl}?key=${GEMINI_API_KEY}`, {
@@ -44,6 +68,7 @@ ${subtitleTexts.join('\n\n')}`;
     }
 
     const data = await response.json();
+    console.log("Gemini API response:", data);
     
     // Extract translated text from the response
     const translatedText = data.candidates[0].content.parts[0].text;
