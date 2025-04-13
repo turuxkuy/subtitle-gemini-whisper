@@ -13,7 +13,8 @@ import { toast } from "sonner";
 
 const Index = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [targetLanguage, setTargetLanguage] = useState("id");
+  const [sourceLanguage, setSourceLanguage] = useState("id");
+  const [targetLanguage, setTargetLanguage] = useState("en");
   const [originalSubtitles, setOriginalSubtitles] = useState<SubtitleEntry[]>([]);
   const [translatedSubtitles, setTranslatedSubtitles] = useState<SubtitleEntry[]>([]);
   const [isTranslating, setIsTranslating] = useState(false);
@@ -43,7 +44,7 @@ const Index = () => {
     setIsTranslating(true);
 
     try {
-      const translated = await translateSubtitles(originalSubtitles, targetLanguage);
+      const translated = await translateSubtitles(originalSubtitles, sourceLanguage, targetLanguage);
       setTranslatedSubtitles(translated);
       toast.success("Translation completed successfully");
     } catch (error) {
@@ -101,16 +102,18 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Languages size={20} />
-                <span>Bahasa Target</span>
+                <span>Pilih Bahasa</span>
               </CardTitle>
               <CardDescription>
-                Pilih bahasa tujuan untuk terjemahan
+                Pilih bahasa asal dan bahasa tujuan untuk terjemahan
               </CardDescription>
             </CardHeader>
             <CardContent>
               <LanguageSelector 
-                selectedLanguage={targetLanguage}
-                onLanguageChange={setTargetLanguage}
+                selectedSourceLanguage={sourceLanguage}
+                selectedTargetLanguage={targetLanguage}
+                onSourceLanguageChange={setSourceLanguage}
+                onTargetLanguageChange={setTargetLanguage}
                 onTranslate={handleTranslate}
                 isTranslating={isTranslating}
                 disableTranslate={originalSubtitles.length === 0}

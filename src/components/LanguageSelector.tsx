@@ -15,10 +15,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 interface LanguageSelectorProps {
-  selectedLanguage: string;
-  onLanguageChange: (language: string) => void;
+  selectedSourceLanguage: string;
+  selectedTargetLanguage: string;
+  onSourceLanguageChange: (language: string) => void;
+  onTargetLanguageChange: (language: string) => void;
   onTranslate: () => void;
   isTranslating: boolean;
   disableTranslate: boolean;
@@ -43,62 +46,117 @@ const languages = [
 ];
 
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({
-  selectedLanguage,
-  onLanguageChange,
+  selectedSourceLanguage,
+  selectedTargetLanguage,
+  onSourceLanguageChange,
+  onTargetLanguageChange,
   onTranslate,
   isTranslating,
   disableTranslate,
 }) => {
-  const [open, setOpen] = useState(false);
+  const [sourceOpen, setSourceOpen] = useState(false);
+  const [targetOpen, setTargetOpen] = useState(false);
 
-  const selectedLanguageLabel = languages.find(
-    (language) => language.value === selectedLanguage
+  const selectedSourceLanguageLabel = languages.find(
+    (language) => language.value === selectedSourceLanguage
+  )?.label;
+
+  const selectedTargetLanguageLabel = languages.find(
+    (language) => language.value === selectedTargetLanguage
   )?.label;
 
   return (
-    <div className="flex flex-col space-y-4">
-      <div className="space-y-2">
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              className="w-full justify-between"
-            >
-              {selectedLanguageLabel || "Select language..."}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0">
-            <Command>
-              <CommandInput placeholder="Search language..." />
-              <CommandEmpty>No language found.</CommandEmpty>
-              <CommandGroup className="max-h-[300px] overflow-y-auto">
-                {languages.map((language) => (
-                  <CommandItem
-                    key={language.value}
-                    value={language.value}
-                    onSelect={(currentValue) => {
-                      onLanguageChange(currentValue);
-                      setOpen(false);
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        selectedLanguage === language.value
-                          ? "opacity-100"
-                          : "opacity-0"
-                      )}
-                    />
-                    {language.label}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </Command>
-          </PopoverContent>
-        </Popover>
+    <div className="flex flex-col space-y-6">
+      <div className="space-y-4">
+        <div>
+          <label className="text-sm font-medium mb-2 block">Bahasa Asal</label>
+          <Popover open={sourceOpen} onOpenChange={setSourceOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={sourceOpen}
+                className="w-full justify-between"
+              >
+                {selectedSourceLanguageLabel || "Pilih bahasa asal..."}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput placeholder="Cari bahasa..." />
+                <CommandEmpty>Bahasa tidak ditemukan.</CommandEmpty>
+                <CommandGroup className="max-h-[300px] overflow-y-auto">
+                  {languages.map((language) => (
+                    <CommandItem
+                      key={language.value}
+                      value={language.value}
+                      onSelect={(currentValue) => {
+                        onSourceLanguageChange(currentValue);
+                        setSourceOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          selectedSourceLanguage === language.value
+                            ? "opacity-100"
+                            : "opacity-0"
+                        )}
+                      />
+                      {language.label}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        <div>
+          <label className="text-sm font-medium mb-2 block">Bahasa Tujuan</label>
+          <Popover open={targetOpen} onOpenChange={setTargetOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={targetOpen}
+                className="w-full justify-between"
+              >
+                {selectedTargetLanguageLabel || "Pilih bahasa tujuan..."}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput placeholder="Cari bahasa..." />
+                <CommandEmpty>Bahasa tidak ditemukan.</CommandEmpty>
+                <CommandGroup className="max-h-[300px] overflow-y-auto">
+                  {languages.map((language) => (
+                    <CommandItem
+                      key={language.value}
+                      value={language.value}
+                      onSelect={(currentValue) => {
+                        onTargetLanguageChange(currentValue);
+                        setTargetOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          selectedTargetLanguage === language.value
+                            ? "opacity-100"
+                            : "opacity-0"
+                        )}
+                      />
+                      {language.label}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       <Button 
