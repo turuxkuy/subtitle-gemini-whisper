@@ -8,6 +8,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command";
 import {
   Popover,
@@ -84,29 +85,31 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
             <PopoverContent className="w-full p-0" align="start">
               <Command>
                 <CommandInput placeholder="Cari bahasa..." />
-                <CommandEmpty>Bahasa tidak ditemukan.</CommandEmpty>
-                <CommandGroup className="max-h-[300px] overflow-y-auto">
-                  {languages.map((language) => (
-                    <CommandItem
-                      key={language.value}
-                      value={language.value}
-                      onSelect={() => {
-                        onSourceLanguageChange(language.value);
-                        setSourceOpen(false);
-                      }}
-                    >
-                      <Check
-                        className={cn(
-                          "mr-2 h-4 w-4",
-                          selectedSourceLanguage === language.value
-                            ? "opacity-100"
-                            : "opacity-0"
-                        )}
-                      />
-                      {language.label}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
+                <CommandList>
+                  <CommandEmpty>Bahasa tidak ditemukan.</CommandEmpty>
+                  <CommandGroup className="max-h-[300px] overflow-y-auto">
+                    {languages.map((language) => (
+                      <CommandItem
+                        key={language.value}
+                        value={language.value}
+                        onSelect={() => {
+                          onSourceLanguageChange(language.value);
+                          setSourceOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedSourceLanguage === language.value
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                        {language.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
               </Command>
             </PopoverContent>
           </Popover>
@@ -129,29 +132,31 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
             <PopoverContent className="w-full p-0" align="start">
               <Command>
                 <CommandInput placeholder="Cari bahasa..." />
-                <CommandEmpty>Bahasa tidak ditemukan.</CommandEmpty>
-                <CommandGroup className="max-h-[300px] overflow-y-auto">
-                  {languages.map((language) => (
-                    <CommandItem
-                      key={language.value}
-                      value={language.value}
-                      onSelect={() => {
-                        onTargetLanguageChange(language.value);
-                        setTargetOpen(false);
-                      }}
-                    >
-                      <Check
-                        className={cn(
-                          "mr-2 h-4 w-4",
-                          selectedTargetLanguage === language.value
-                            ? "opacity-100"
-                            : "opacity-0"
-                        )}
-                      />
-                      {language.label}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
+                <CommandList>
+                  <CommandEmpty>Bahasa tidak ditemukan.</CommandEmpty>
+                  <CommandGroup className="max-h-[300px] overflow-y-auto">
+                    {languages.map((language) => (
+                      <CommandItem
+                        key={language.value}
+                        value={language.value}
+                        onSelect={() => {
+                          onTargetLanguageChange(language.value);
+                          setTargetOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedTargetLanguage === language.value
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                        {language.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
               </Command>
             </PopoverContent>
           </Popover>
