@@ -8,11 +8,8 @@ const GEMINI_API_KEY = "AIzaSyA8YmwOrBK7Yg1E_NMg-_T2TZf7J9h8qOM";
 export const geminiModels = [
   { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", description: "Cepat dan hemat" },
   { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", description: "Kualitas tinggi" },
-  { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash", description: "Generasi terbaru, cepat" },
-  { id: "gemini-2.0-flash-thinking", name: "Gemini 2.0 Flash Thinking", description: "Experimental" },
-  { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", description: "Experimental" },
-  { id: "gemini-deep-research", name: "Deep Research", description: "Untuk riset mendalam" },
-  { id: "gemini-personalization", name: "Personalization", description: "Experimental" },
+  { id: "gemini-pro", name: "Gemini Pro", description: "Model standar" },
+  { id: "gemini-pro-vision", name: "Gemini Pro Vision", description: "Mendukung analisis gambar" }
 ];
 
 export async function translateSubtitles(
@@ -50,7 +47,15 @@ export async function translateSubtitles(
     const targetLangName = languages[targetLanguage] || targetLanguage;
 
     const subtitleTexts = subtitles.map(sub => sub.text);
-    const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
+    
+    // Fallback to a supported model if the selected one isn't available
+    let selectedModel = model;
+    if (!geminiModels.some(m => m.id === model)) {
+      console.warn(`Model ${model} not found, falling back to gemini-1.5-flash`);
+      selectedModel = "gemini-1.5-flash";
+    }
+    
+    const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + selectedModel + ":generateContent";
     
     // Enhanced prompt with clear instructions for high-quality translations
     const prompt = `Translate the following subtitles from ${sourceLangName} to ${targetLangName}.
@@ -69,7 +74,7 @@ ${subtitleTexts.join('\n\n')}`;
     console.log("Sending request to Gemini API with prompt:", prompt);
     console.log("Source language:", sourceLangName);
     console.log("Target language:", targetLangName);
-    console.log("Selected model:", model);
+    console.log("Selected model:", selectedModel);
     console.log("Number of subtitles:", subtitles.length);
 
     // Make request to Gemini API
