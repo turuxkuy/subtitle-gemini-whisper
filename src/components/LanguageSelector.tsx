@@ -109,23 +109,9 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
             </SelectTrigger>
             <SelectContent className="max-h-[300px]">
               {geminiModels.map((model) => (
-                <TooltipProvider key={model.id}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SelectItem value={model.id} className="flex items-center justify-between pr-10">
-                        <div className="flex items-center gap-2">
-                          {model.name}
-                          {model.provider === "openrouter" && (
-                            <Badge variant="outline" className="ml-2 text-xs">OpenRouter</Badge>
-                          )}
-                        </div>
-                      </SelectItem>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{model.description}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <SelectItem key={model.id} value={model.id} className="flex items-center justify-between pr-10">
+                  {model.name}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
