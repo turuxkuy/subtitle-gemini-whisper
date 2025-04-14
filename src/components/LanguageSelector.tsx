@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { geminiModels } from "@/services/geminiService";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 
 interface LanguageSelectorProps {
   selectedSourceLanguage: string;
@@ -111,8 +112,13 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
                 <TooltipProvider key={model.id}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <SelectItem value={model.id}>
-                        {model.name}
+                      <SelectItem value={model.id} className="flex items-center justify-between pr-10">
+                        <div className="flex items-center gap-2">
+                          {model.name}
+                          {model.provider === "openrouter" && (
+                            <Badge variant="outline" className="ml-2 text-xs">OpenRouter</Badge>
+                          )}
+                        </div>
                       </SelectItem>
                     </TooltipTrigger>
                     <TooltipContent>

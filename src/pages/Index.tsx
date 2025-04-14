@@ -95,7 +95,7 @@ const Index = () => {
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Terjemahan Subtitle</h1>
-          <p className="text-muted-foreground">Upload file SRT Anda dan terjemahkan ke bahasa lain menggunakan Gemini AI</p>
+          <p className="text-muted-foreground">Upload file SRT Anda dan terjemahkan ke bahasa lain menggunakan AI</p>
         </div>
 
         <div className="grid gap-6">
