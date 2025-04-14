@@ -106,7 +106,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Pilih model AI..." />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-[300px]">
               {geminiModels.map((model) => (
                 <TooltipProvider key={model.id}>
                   <Tooltip>

@@ -8,6 +8,11 @@ const GEMINI_API_KEY = "AIzaSyA8YmwOrBK7Yg1E_NMg-_T2TZf7J9h8qOM";
 export const geminiModels = [
   { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", description: "Cepat dan hemat" },
   { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", description: "Kualitas tinggi" },
+  { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash", description: "Generasi terbaru, cepat" },
+  { id: "gemini-2.0-flash-thinking", name: "Gemini 2.0 Flash Thinking", description: "Experimental" },
+  { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", description: "Experimental" },
+  { id: "gemini-deep-research", name: "Deep Research", description: "Untuk riset mendalam" },
+  { id: "gemini-personalization", name: "Personalization", description: "Experimental" },
 ];
 
 export async function translateSubtitles(
@@ -55,6 +60,7 @@ Your translation MUST:
 3. Keep proper names unchanged
 4. Preserve formatting and emotion
 5. Be concise and clear
+6. Translate ALL subtitles completely without omissions
 
 Return ONLY the translated text for each subtitle, in the same order:
 
@@ -79,7 +85,8 @@ ${subtitleTexts.join('\n\n')}`;
         generationConfig: {
           temperature: 0.2,
           topP: 0.8,
-          topK: 40
+          topK: 40,
+          maxOutputTokens: 8192 // Ensure there's enough token space for all translations
         }
       })
     });
@@ -107,10 +114,16 @@ ${subtitleTexts.join('\n\n')}`;
     console.log("Translated subtitles count:", translatedSubtitles.length);
     console.log("Original subtitles count:", subtitles.length);
     
-    // Map the translated text back to subtitle objects
+    // If the counts don't match, try to intelligently adjust or log a warning
+    if (translatedSubtitles.length !== subtitles.length) {
+      console.warn("Warning: number of translated subtitles doesn't match original count.");
+    }
+    
+    // Map the translated text back to subtitle objects, ensuring each subtitle gets a translation
     const result = subtitles.map((sub, index) => ({
       ...sub,
-      text: index < translatedSubtitles.length ? translatedSubtitles[index].trim() : sub.text
+      text: index < translatedSubtitles.length ? translatedSubtitles[index].trim() : 
+        `[${targetLangName} translation missing] ${sub.text}`
     }));
     
     return result;
