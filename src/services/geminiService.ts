@@ -4,10 +4,17 @@ import { SubtitleEntry } from "@/types/subtitle";
 // The Gemini API key
 const GEMINI_API_KEY = "AIzaSyA8YmwOrBK7Yg1E_NMg-_T2TZf7J9h8qOM";
 
+// Available Gemini models
+export const geminiModels = [
+  { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", description: "Cepat dan hemat" },
+  { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", description: "Kualitas tinggi" },
+];
+
 export async function translateSubtitles(
   subtitles: SubtitleEntry[],
   sourceLanguage: string,
-  targetLanguage: string
+  targetLanguage: string,
+  model: string = "gemini-1.5-flash"
 ): Promise<SubtitleEntry[]> {
   try {
     // Ensure subtitles array is not empty
@@ -38,17 +45,25 @@ export async function translateSubtitles(
     const targetLangName = languages[targetLanguage] || targetLanguage;
 
     const subtitleTexts = subtitles.map(sub => sub.text);
-    const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+    const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
     
-    // Create the prompt with source and target language
-    const prompt = `Translate the following subtitles from ${sourceLangName} to ${targetLangName}. 
-Return only the translated text for each subtitle, maintaining the same format and number:
+    // Enhanced prompt with clear instructions for high-quality translations
+    const prompt = `Translate the following subtitles from ${sourceLangName} to ${targetLangName}.
+Your translation MUST:
+1. Maintain the original meaning and context
+2. Use natural expressions in ${targetLangName}
+3. Keep proper names unchanged
+4. Preserve formatting and emotion
+5. Be concise and clear
+
+Return ONLY the translated text for each subtitle, in the same order:
 
 ${subtitleTexts.join('\n\n')}`;
 
     console.log("Sending request to Gemini API with prompt:", prompt);
     console.log("Source language:", sourceLangName);
     console.log("Target language:", targetLangName);
+    console.log("Selected model:", model);
     console.log("Number of subtitles:", subtitles.length);
 
     // Make request to Gemini API

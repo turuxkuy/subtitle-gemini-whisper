@@ -34,7 +34,9 @@ export function parseSRT(content: string): SubtitleEntry[] {
 }
 
 export function createSRTContent(subtitles: SubtitleEntry[]): string {
+  // Build the SRT content with automatic numbering and proper formatting
   return subtitles.map((subtitle, index) => {
-    return `${index + 1}\n${subtitle.startTime} --> ${subtitle.endTime}\n${subtitle.text}\n`;
-  }).join('\n');
+    // Add 1 to index for 1-based numbering in SRT files
+    return `${index + 1}\n${subtitle.startTime} --> ${subtitle.endTime}\n${subtitle.text}`;
+  }).join('\n\n'); // Use double newlines to separate subtitle blocks
 }

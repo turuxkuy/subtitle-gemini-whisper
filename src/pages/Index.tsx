@@ -1,19 +1,20 @@
 
 import { useState } from "react";
-import { Upload, Languages, FileText } from "lucide-react";
+import { Upload, Languages, FileText, Sparkles } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import FileUploader from "@/components/FileUploader";
 import LanguageSelector from "@/components/LanguageSelector";
 import TranslationResult from "@/components/TranslationResult";
 import { SubtitleEntry } from "@/types/subtitle";
 import { parseSRT, createSRTContent } from "@/utils/srtParser";
-import { translateSubtitles } from "@/services/geminiService";
+import { translateSubtitles, geminiModels } from "@/services/geminiService";
 import { toast } from "sonner";
 
 const Index = () => {
   const [file, setFile] = useState<File | null>(null);
   const [sourceLanguage, setSourceLanguage] = useState("id");
   const [targetLanguage, setTargetLanguage] = useState("en");
+  const [selectedModel, setSelectedModel] = useState(geminiModels[0].id);
   const [originalSubtitles, setOriginalSubtitles] = useState<SubtitleEntry[]>([]);
   const [translatedSubtitles, setTranslatedSubtitles] = useState<SubtitleEntry[]>([]);
   const [isTranslating, setIsTranslating] = useState(false);
@@ -56,8 +57,8 @@ const Index = () => {
     setIsTranslating(true);
 
     try {
-      console.log(`Menerjemahkan dari ${sourceLanguage} ke ${targetLanguage}...`);
-      const translated = await translateSubtitles(originalSubtitles, sourceLanguage, targetLanguage);
+      console.log(`Menerjemahkan dari ${sourceLanguage} ke ${targetLanguage} menggunakan model ${selectedModel}...`);
+      const translated = await translateSubtitles(originalSubtitles, sourceLanguage, targetLanguage, selectedModel);
       setTranslatedSubtitles(translated);
       toast.success(`Terjemahan berhasil: ${translated.length} baris subtitle`);
     } catch (error) {
@@ -117,18 +118,20 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Languages size={20} />
-                <span>Pilih Bahasa</span>
+                <span>Pilih Bahasa dan Model</span>
               </CardTitle>
               <CardDescription>
-                Pilih bahasa asal dan bahasa tujuan untuk terjemahan
+                Pilih bahasa asal, bahasa tujuan, dan model AI untuk terjemahan
               </CardDescription>
             </CardHeader>
             <CardContent>
               <LanguageSelector 
                 selectedSourceLanguage={sourceLanguage}
                 selectedTargetLanguage={targetLanguage}
+                selectedModel={selectedModel}
                 onSourceLanguageChange={setSourceLanguage}
                 onTargetLanguageChange={setTargetLanguage}
+                onModelChange={setSelectedModel}
                 onTranslate={handleTranslate}
                 isTranslating={isTranslating}
                 disableTranslate={originalSubtitles.length === 0}

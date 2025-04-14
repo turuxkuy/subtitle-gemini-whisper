@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Check, ChevronsUpDown, Globe } from "lucide-react";
+import { Check, ChevronsUpDown, Globe, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
   Select, 
@@ -9,12 +9,16 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
+import { geminiModels } from "@/services/geminiService";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface LanguageSelectorProps {
   selectedSourceLanguage: string;
   selectedTargetLanguage: string;
+  selectedModel: string;
   onSourceLanguageChange: (language: string) => void;
   onTargetLanguageChange: (language: string) => void;
+  onModelChange: (model: string) => void;
   onTranslate: () => void;
   isTranslating: boolean;
   disableTranslate: boolean;
@@ -41,8 +45,10 @@ const languages = [
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   selectedSourceLanguage,
   selectedTargetLanguage,
+  selectedModel,
   onSourceLanguageChange,
   onTargetLanguageChange,
+  onModelChange,
   onTranslate,
   isTranslating,
   disableTranslate,
@@ -83,6 +89,37 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
                 <SelectItem key={language.value} value={language.value}>
                   {language.label}
                 </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <label className="text-sm font-medium mb-2 flex items-center gap-1">
+            <Sparkles size={16} className="text-yellow-500" />
+            <span>Model AI</span>
+          </label>
+          <Select 
+            value={selectedModel} 
+            onValueChange={onModelChange}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Pilih model AI..." />
+            </SelectTrigger>
+            <SelectContent>
+              {geminiModels.map((model) => (
+                <TooltipProvider key={model.id}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <SelectItem value={model.id}>
+                        {model.name}
+                      </SelectItem>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{model.description}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ))}
             </SelectContent>
           </Select>
